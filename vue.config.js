@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-const baseUrl = 'http://192.168.0.172:8888'
+const baseUrl = 'http://127.0.0.1:8888'
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
