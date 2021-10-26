@@ -1,13 +1,13 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const baseUrl = 'http://192.168.0.172:8888'
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
 const name = defaultSettings.title || 'vue Admin Template' // page title
-
+// console.log(process.env.VUE_APP_BASE_API);
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
@@ -36,7 +36,15 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      '/': {
+        target: baseUrl, //API服务器的地址
+        changeOrigin: true,
+        pathRewrite: {
+          '^/': '',
+        },
+      },
+    },
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
