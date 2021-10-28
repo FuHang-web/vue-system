@@ -23,3 +23,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getUserPage(data = {}) {
+  return request({
+    method: 'GET',
+    url: '/user/getPage',
+    params: data,
+  })
+}

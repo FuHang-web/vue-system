@@ -9,3 +9,10 @@ export default {
   name: 'App'
 }
 </script>
+<style lang="scss">
+.container {
+  .el-card {
+    margin: 10px;
+  }
+}
+</style>

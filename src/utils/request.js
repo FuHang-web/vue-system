@@ -19,8 +19,8 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    console.log(store.getters.token);
-    console.log(getToken());
+    // console.log(store.getters.token);
+    // console.log(getToken());
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -31,7 +31,7 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log(error) // for debug
+    console.log(error.message) // for debug
     return Promise.reject(error)
   }
 )
@@ -97,7 +97,7 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    console.log('err' + error.message) // for debug
     Message({
       message: error.message,
       type: 'error',
