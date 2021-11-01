@@ -1,12 +1,12 @@
 <template>
   <div class="menu">
-    <my-table></my-table>
+    <!-- <my-table></my-table> -->
   </div>
 </template>
 
 <script>
 import MyTable from "@/components/Table/index.vue";
-import { getMenuList } from '@/api/menu'
+import { getPage } from '@/api/menu'
 export default {
   components: {
     MyTable,
@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     async getPageData() {
-      const res = await getMenuList()
+      const res = await getPage()
       console.log(res);
     },
   },

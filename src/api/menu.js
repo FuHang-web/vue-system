@@ -8,3 +8,11 @@ export function getMenuList(data = {}) {
     params: data,
   })
 }
+
+export function getPage(data = {}) {
+  return request({
+    method: 'GET',
+    url: '/menu/getPage',
+    params: data,
+  })
+}

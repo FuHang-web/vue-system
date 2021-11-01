@@ -7,7 +7,20 @@
         :page="page"
         @get-pagelist="getPageList"
         v-loading="tableLoading"
-      ></my-table>
+      >
+        <template #account_status="{ data: row }">
+          <el-switch
+            v-model="row.account_status"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-text="正常"
+            inactive-text="锁定"
+            active-value="0"
+            inactive-value="9"
+          >
+          </el-switch>
+        </template>
+      </my-table>
     </el-card>
   </div>
 </template>
@@ -30,8 +43,7 @@ export default {
         border: true, // 边框
         stripe: false, // 斑马纹
         pagination: true, // 分页
-        paginationDirection: "center",
-        isPaginationColor: false,
+        align: 'center',
         // height: 500,
         // maxHeight: 500,
         highlightCurrentRow: true, // 设置单选-同 singleCurrentChange 事件搭配使用
@@ -41,13 +53,19 @@ export default {
           {
             label: "用户名称",
             prop: "username",
+            copy: true,
           },
           { label: "真实姓名", prop: "real_name" },
           { label: "微信昵称", prop: "nick_name" },
           { label: "性别", prop: "sex" },
           { label: "头像", prop: "url" },
           { label: "用户类型", prop: "user_attribute" },
-          { label: "帐号状态", prop: "account_status" },
+          {
+            label: "帐号状态",
+            prop: "account_status",
+            slot: "account_status",
+            width: '150'
+          },
           {
             label: "操作",
             prop: "operate",
@@ -56,6 +74,16 @@ export default {
             align: "center",
           },
         ],
+        pagination: {
+          background: true,
+          direction: "center",
+          pageSizes: [10, 200, 300, 400],
+          small: false,
+          layout: "total, sizes, prev, pager, next, jumper",
+          prevText: "",
+          nextText: "",
+          disabled: false,
+        },
       },
       page: {
         size: 10,

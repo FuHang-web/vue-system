@@ -62,7 +62,7 @@
             :prop="columnItem.prop"
             :label="columnItem.label"
             :fixed="columnItem.fixed"
-            :align="columnItem.align"
+            :align="option.align || columnItem.align"
             :sortable="columnItem.sortable"
             :filters="columnItem.filters"
             :filter-method="columnItem.filterMethod"
@@ -78,15 +78,23 @@
             :prop="columnItem.prop"
             :label="columnItem.label"
             :fixed="columnItem.fixed"
-            :align="columnItem.align"
+            :align="option.align || columnItem.align"
             :sortable="columnItem.sortable"
             :filters="columnItem.filters"
             :filter-method="columnItem.filterMethod"
             :width="columnItem.width"
             :show-overflow-tooltip="columnItem.tooltip"
           >
-            <template #default="{row}">
-              <slot :name="columnItem.prop" :data="row"></slot>
+            <template #default="{ row, $index }">
+              <slot :name="columnItem.slot" :data="row"></slot>
+              <span
+                v-if="columnItem.copy"
+                class="iconfont icon-fuzhi"
+                title="复制"
+                :class="columnItem.prop + '_' + $index"
+                :data-clipboard-text="row[columnItem.prop]"
+                @click="copyData(columnItem.prop + '_' + $index)"
+              ></span>
             </template>
           </el-table-column>
           <el-table-column
@@ -95,7 +103,7 @@
             :prop="columnItem.prop"
             :label="columnItem.label"
             :fixed="columnItem.fixed"
-            :align="columnItem.align"
+            :align="option.align || columnItem.align"
             :sortable="columnItem.sortable"
             :filters="columnItem.filters"
             :filter-method="columnItem.filterMethod"
@@ -108,10 +116,10 @@
                   <span v-html="columnItem.prefixIconContent"></span>
                 </template>
                 <i
-                  class=" prefix-icon"
+                  class="prefix-icon"
                   :class="[
                     columnItem.prefixIcon.startsWith('icon-') ? 'iconfont' : '',
-                    columnItem.prefixIcon
+                    columnItem.prefixIcon,
                   ]"
                   v-if="columnItem.prefixIcon"
                 ></i>
@@ -127,10 +135,21 @@
                   v-if="columnItem.suffixIcon"
                   :class="[
                     columnItem.suffixIcon.startsWith('icon-') ? 'iconfont' : '',
-                    columnItem.suffixIcon
+                    columnItem.suffixIcon,
                   ]"
                 ></i>
               </el-tooltip>
+            </template>
+            <template #default="{ row, $index }">
+              <span>{{ row[columnItem.prop] }}</span>
+              <span
+                v-if="columnItem.copy"
+                class="iconfont icon-fuzhi"
+                title="复制"
+                :class="columnItem.prop + '_' + $index"
+                :data-clipboard-text="row[columnItem.prop]"
+                @click="copyData(columnItem.prop + '_' + $index)"
+              ></span>
             </template>
             <!-- <el-table-column
             v-for="items in columnItem.columnItem"
@@ -147,18 +166,24 @@
     </div>
     <div
       class="pagination"
-      :style="{ 'text-align': option.paginationDirection }"
+      :style="{ 'text-align': option.pagination.direction }"
     >
       <el-pagination
+        :small="option.pagination.small"
+        :background="option.pagination.background"
         :hide-on-single-page="page.current <= 1"
-        :background="option.isPaginationColor"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="page.current"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="[10, 200, 300, 400]"
         :page-size="page.size"
-        layout="total, sizes, prev, pager, next, jumper"
+        :layout="
+          option.pagination.layout || 'total, sizes, prev, pager, next, jumper'
+        "
         :total="page.total"
+        :prev-text="option.pagination.prevText"
+        :next-text="option.pagination.nextText"
+        :disabled="option.pagination.disabled"
       >
       </el-pagination>
     </div>
@@ -166,33 +191,54 @@
 </template>
 
 <script>
+import Clipboard from "clipboard";
 export default {
   props: {
     option: Object,
     data: Array,
     rowClassName: Function | String,
     page: Object,
-    searchForm: Object
+    searchForm: Object,
   },
   model: {
     prop: "searchForm",
-    event: "change"
+    event: "change",
   },
   data() {
     return {};
   },
   computed: {
     searchItem() {
-      return array => {
-        return array.filter(item => item.search);
+      return (array) => {
+        return array.filter((item) => item.search);
       };
-    }
+    },
   },
   mounted() {
     console.log(this.data);
     console.log(this.option);
   },
   methods: {
+    copyData(row) {
+      let clipboard = new Clipboard(`.${row}`);
+      clipboard.on("success", (e) => {
+        console.log(e);
+        this.$notify({
+          title: "复制成功",
+          message: e.text,
+          type: "success",
+        });
+        clipboard.destroy();
+      });
+      clipboard.on("error", (e) => {
+        this.$notify({
+          title: "复制失败",
+          message: e.text,
+          type: "success",
+        });
+        clipboard.destroy();
+      });
+    },
     /* 搜索 */
     // onSubmitSearch() {
     //   console.log(this.searchForm);
@@ -231,8 +277,8 @@ export default {
       console.log(this.page);
       this.$emit("update:page", this.page); // 更新父组件分页current
       this.$emit("get-pagelist");
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -246,6 +292,13 @@ export default {
   }
   .pagination {
     margin-top: 20px;
+  }
+  .icon-fuzhi {
+    cursor: pointer;
+    margin-left: 6px;
+    &:hover {
+      color: rgb(64, 158, 255);
+    }
   }
 }
 </style>
